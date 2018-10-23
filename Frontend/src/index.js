@@ -24,20 +24,15 @@ class ContactDetail extends React.Component {
   
   newContact(e) {
     e.preventDefault();
-    this.props.newContact();
+    this.props.newContact(this.state);
   }
-    
-  updateContactList(e) {
-    e.preventDefault();
-    this.props.updateContactList(this.state);
-  }
-  
+ 
   render() {
     return <div className="detail">
       <div className="header">
         <div className="body">New Contact</div>
       </div>
-      <form onSubmit={(e) => this.updateContactList(e)}>
+      <form >
         <div className="form-group">
           <label htmlFor="Name">Name</label>
           <input 
@@ -58,8 +53,8 @@ class ContactDetail extends React.Component {
             onChange={(e) => this.handleInputChange(e)} 
           />
         </div>
-        <div className="action">
-          <input type="submit" className="btn" value={this.props.selectedContact._id ? 'Update' : 'Save'} />
+        <div className="action" onClick={(e) => this.newContact(e)}>
+          <input type="submit" className="btn" value="Add New Contact" />
         </div>
       </form>
     </div>
@@ -89,11 +84,6 @@ class App extends React.Component {
     this.getContacts();
   }
   
-  newContact() {
-    this.setState({
-      selectedContact: this.emptyContact
-    });
-  }
   
   fixedEncodeURIComponent(str) {
     return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
@@ -115,10 +105,8 @@ class App extends React.Component {
       this.setState({loading: true});
       let response = await fetch(this.props.config.apiUrl);
       let responseJson = [];
-      console.log(response)
       try {
         responseJson = await response.json();
-        console.log(responseJson);
         this.setState({ 
           contacts: responseJson,
           selectedContact: this.emptyContact,
@@ -133,17 +121,41 @@ class App extends React.Component {
     }
   }
   
-  async updateContactList(updatedContact) {
+  async updateContactList() {
+    console.log("updateContactList")
     this.setState({loading: true});
     try {
       await fetch(this.props.config.apiUrl, {
         method: 'POST',
         headers: {
-          "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
         },
-        body: this.toFormData(updatedContact)
+        body: JSON.stringify(this.state.contacts)
       });
+
       this.getContacts();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  newContact(contact)
+  {
+    try {
+      console.log("contact"); 
+      console.log(contact); 
+      var ab = {
+        _id: this.state.contacts.length,
+        Name: contact.Name, 
+        Phone: contact.Phone
+      }
+      console.log(ab);
+
+      this.state.contacts[this.state.contacts.length] = ab;
+      this.setState({ 
+        contacts: this.state.contacts
+      });
     } catch (error) {
       console.log(error);
     }
@@ -154,35 +166,39 @@ class App extends React.Component {
       <header>
         <div className="body">Contacts</div>
       </header>
-      <div className="container">
-        <main>
-          <div className="list">
-            { this.state.contacts.length ? '' : 'No contacts' }
-            <ul>
-              <li key="table head">
-                <a >
-                  <span>{"NAME"}</span> 
-                  <span>{"PHONE"}</span> 
-                  <i className="fa fa-arrow-right"></i>
-                </a>
-              </li>
-              { this.state.contacts.map(contact => 
-                   <li key={contact._id}>
-                      <a>
-                        <span>{contact.Name}</span> 
-                        <span>{contact.Phone}</span> 
-                        <i className="fa fa-arrow-right"></i>
-                      </a>
-                   </li>
-               )}
-            </ul>
-          </div>
-          <ContactDetail
-            selectedContact={this.state.selectedContact}
-            newContact={() => this.newContact()}
-            updateContactList={(contact) => this.updateContactList(contact)} />
-        </main>
-      </div>
+      <form onSubmit={(e) => this.updateContactList(e)}>
+        <div className="container">
+          <main>
+            <div className="list">
+              { this.state.contacts.length ? '' : 'No contacts' }
+              <ul>
+                <li key="table head">
+                  <a>
+                    <span>{"NAME"}</span> 
+                    <span>{"PHONE"}</span> 
+                    <i className="fa fa-arrow-right"></i>
+                  </a>
+                </li>
+                { this.state.contacts.map(contact => 
+                    <li key={contact._id}>
+                        <a>
+                          <span>{contact.Name}</span> 
+                          <span>{contact.Phone}</span> 
+                          <i className="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                )}
+              </ul>
+            </div>      
+            <ContactDetail
+              selectedContact={this.state.selectedContact}
+              newContact={(contact) => this.newContact(contact)} />
+          </main>
+          <div className="action" >
+            <input type="submit" className="btn" value="SUBMIT" onClick={(e) => this.updateContactList()}/>
+        </div>
+        </div>
+      </form>
       <div className={this.state.loading ? 'loading show' : 'loading'}>
         <div className="loading-gif"></div>&nbsp;loading...
       </div>
@@ -191,7 +207,7 @@ class App extends React.Component {
 }
 
 const config = {
-  apiUrl: "http://localhost:8000/"
+  apiUrl: "http://localhost:8080/"
 };
 
 ReactDOM.render(
