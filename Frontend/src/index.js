@@ -106,6 +106,7 @@ class App extends React.Component {
   }
   
   async updateContactList() {
+    console.log("updateContactList") ;
     this.setState({loading: true});
     try {
       await fetch(this.props.config.apiUrl, {
@@ -176,7 +177,7 @@ class App extends React.Component {
               newContact={(contact) => this.newContact(contact)} />
           </main>
           <div className="action" >
-            <input type="submit" className="btn" value="SUBMIT" onClick={(e) => this.updateContactList()}/>
+            <input type="submit" className="btn" value="SUBMIT" />
         </div>
         </div>
       </form>
