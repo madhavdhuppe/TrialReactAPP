@@ -22,11 +22,6 @@ class ContactDetail extends React.Component {
     });
   }
   
-  newContact(e) {
-    e.preventDefault();
-    this.props.newContact();
-  }
-    
   updateContactList(e) {
     e.preventDefault();
     this.props.updateContactList(this.state);
@@ -89,11 +84,6 @@ class App extends React.Component {
     this.getContacts();
   }
   
-  newContact() {
-    this.setState({
-      selectedContact: this.emptyContact
-    });
-  }
   
   fixedEncodeURIComponent(str) {
     return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
@@ -179,7 +169,6 @@ class App extends React.Component {
           </div>
           <ContactDetail
             selectedContact={this.state.selectedContact}
-            newContact={() => this.newContact()}
             updateContactList={(contact) => this.updateContactList(contact)} />
         </main>
       </div>
