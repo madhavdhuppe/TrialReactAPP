@@ -83,24 +83,8 @@ class App extends React.Component {
   componentDidMount() {
     this.getContacts();
   }
-  
-  
-  fixedEncodeURIComponent(str) {
-    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-  }
-  
-  toFormData(contact) {
-    let array = [];
-    for (let prop in contact) {
-      array.push(`${prop}=${this.fixedEncodeURIComponent(contact[prop])}`);
-    }
-    return array.join('&');
-  }
-  
-  async getContacts() {
     
+  async getContacts() {
     try {
       this.setState({loading: true});
       let response = await fetch(this.props.config.apiUrl);
@@ -122,7 +106,6 @@ class App extends React.Component {
   }
   
   async updateContactList() {
-    console.log("updateContactList")
     this.setState({loading: true});
     try {
       await fetch(this.props.config.apiUrl, {
@@ -143,8 +126,6 @@ class App extends React.Component {
   newContact(contact)
   {
     try {
-      console.log("contact"); 
-      console.log(contact); 
       var ab = {
         _id: this.state.contacts.length,
         Name: contact.Name, 
