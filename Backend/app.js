@@ -47,7 +47,6 @@ app.get('/', function(req, res) {
             console.log("Do something with your error...");
         } else {
             queryResult= content;
-         //   console.log(queryResult);
             res.send(queryResult);
         }
     });
